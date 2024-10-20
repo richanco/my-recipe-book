@@ -1,7 +1,5 @@
 import requests
 from bs4 import BeautifulSoup
-import urllib.request as req
-import json
 
 #　取得したデータをJsonデータに変換する
 def recipe_to_json(cook_url):
@@ -37,7 +35,7 @@ def recipe_to_json(cook_url):
       proc_list.append(dict_process)
       step_num = step_num + 1
 
-  # JSONデータに変換
+  # 辞書データに変換
   recipe_data = {
     'menu': menu,
     'ingredients': ingredient_list,

@@ -1,0 +1,52 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  recipe-search-app
+
+  Sample SAM Template for recipe-search-app
+
+Parameters:
+  DbParameter:
+    Type: String
+    Default: "postgresql://{username}:{password}@{hostname}:{port}/{database}"
+
+# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+Globals:
+  Function:
+    Timeout: 3
+    MemorySize: 128
+
+Resources:
+  RecipeSearchFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: recipe_search/
+      Handler: app.lambda_handler
+      Runtime: python3.12
+      Architectures:
+      - x86_64
+      Environment: 
+        Variables:
+          DB_PARAM: !Ref DbParameter      
+      Layers:
+      - !Ref FlaskAppLayer
+      Events:
+        Root:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /
+            Method: get
+        Al:
+          Type: Api    
+          Properties:
+            Path: /{proxy+}
+            Method: get
+  FlaskAppLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      CompatibleRuntimes:
+        - python3.12
+      ContentUri: layer/
+      LayerName: recipe_search_layer
+    Metadata:
+      BuildMethod: python3.12
